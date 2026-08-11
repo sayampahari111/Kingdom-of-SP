@@ -30,10 +30,11 @@ app = FastAPI(
 # HOME
 # =========================
 
+from fastapi.responses import FileResponse
+
 @app.get("/")
 def home():
-    return {"message": "Hello Sayam"}
-
+    return FileResponse("index.html")
 
 # =========================
 # QUESTION + OPTIONS DETECT
