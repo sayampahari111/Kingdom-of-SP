@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Kingdom of SP</title>
+
+    <style>
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0f172a;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 500px;
+            margin: 60px auto;
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 15px;
+        }
+
+        h1 {
+            color: #22c55e;
+            font-size: 34px;
+        }
+
+        label {
+            display: block;
+            margin-top: 20px;
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+
+        select {
+            width: 220px;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        input[type="file"] {
+            margin-top: 25px;
+            font-size: 15px;
+        }
+
+        button {
+            margin-top: 25px;
+            padding: 12px 22px;
+            border: none;
+            border-radius: 6px;
+            background: #22c55e;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #16a34a;
+        }
+
+        h2 {
+            margin-top: 30px;
+        }
+
+        #result {
+            background: black;
+            padding: 20px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            min-height: 100px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="container">
+
+        <h1>Kingdom of SP</h1>
+
+        <label>
+            Upload your Image or PDF
+        </label>
+
+
+        <label>
+            Choose Action:
+        </label>
+
+
+        <select id="action">
+
+            <option value="extract">
+                Extract Text
+            </option>
+
+            <option value="translate">
+                Translate to Bangla
+            </option>
+
+        </select>
+
+
+        <br>
+
+
+        <input
+            type="file"
+            id="fileInput"
+            accept="image/*,.pdf"
+        >
+
+
+        <br>
+
+
+        <button onclick="runProcess()">
+            Run
+        </button>
+
+
+        <h2>
+            Result:
+        </h2>
+
+
+        <div id="result">
+            Nothing yet...
+        </div>
+
+    </div>
+
+
+    <script>
+
+        async function runProcess() {
+
+            const fileInput =
+                document.getElementById("fileInput");
+
+            const action =
+                document.getElementById("action").value;
+
+            const result =
+                document.getElementById("result");
+
+
+            if (!fileInput.files.length) {
+
+                result.textContent =
+                    "Please choose a file first.";
+
+                return;
+            }
+
+
+            const formData =
+                new FormData();
+
+
+            formData.append(
+                "file",
+                fileInput.files[0]
+            );
+
+
+            formData.append(
+                "action",
+                action
+            );
+
+
+            result.textContent =
+                "Processing...";
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "http://127.0.0.1:8000/upload",
+                        {
+                            method: "POST",
+                            body: formData
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                result.textContent =
+                    JSON.stringify(
+                        data,
+                        null,
+                        2
+                    );
+
+
+            } catch (error) {
+
+                result.textContent =
+                    "Error: " + error;
+
+            }
+
+        }
+
+    </script>
+
+</body>
+
+</html>
