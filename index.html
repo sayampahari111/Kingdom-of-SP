@@ -1,226 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kingdom of SP</title>
 
-    <meta charset="UTF-8">
+  <style>
+    body {
+      background: #08142b;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    .container {
+      background: #1a2740;
+      width: 100%;
+      max-width: 650px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    }
 
-    <title>Kingdom of SP</title>
+    h1 {
+      color: #1ee26b;
+      font-size: 3rem;
+      margin-bottom: 30px;
+    }
 
-    <style>
+    label {
+      display: block;
+      margin-top: 20px;
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
 
-        body {
-            margin: 0;
-            padding: 0;
-            background: #0f172a;
-            color: white;
-            font-family: Arial, sans-serif;
-        }
+    select,
+    input[type="file"] {
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 15px;
+    }
 
-        .container {
-            width: 500px;
-            margin: 60px auto;
-            background: #1e293b;
-            padding: 30px;
-            border-radius: 15px;
-        }
+    button {
+      background: #1ee26b;
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: bold;
+    }
 
-        h1 {
-            color: #22c55e;
-            font-size: 34px;
-        }
+    button:hover {
+      background: #16c65b;
+    }
 
-        label {
-            display: block;
-            margin-top: 20px;
-            margin-bottom: 8px;
-            font-size: 18px;
-        }
+    h2 {
+      margin-top: 35px;
+      font-size: 2rem;
+    }
 
-        select {
-            width: 220px;
-            padding: 10px;
-            font-size: 16px;
-        }
-
-        input[type="file"] {
-            margin-top: 25px;
-            font-size: 15px;
-        }
-
-        button {
-            margin-top: 25px;
-            padding: 12px 22px;
-            border: none;
-            border-radius: 6px;
-            background: #22c55e;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #16a34a;
-        }
-
-        h2 {
-            margin-top: 30px;
-        }
-
-        #result {
-            background: black;
-            padding: 20px;
-            border-radius: 8px;
-            white-space: pre-wrap;
-            overflow-x: auto;
-            min-height: 100px;
-        }
-
-    </style>
-
+    pre {
+      background: black;
+      padding: 20px;
+      border-radius: 12px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      min-height: 120px;
+    }
+  </style>
 </head>
 
-
 <body>
+  <div class="container">
+    <h1>Kingdom of SP</h1>
 
-    <div class="container">
+    <p>Upload your Image or PDF</p>
 
-        <h1>Kingdom of SP</h1>
+    <label for="action">Choose Action:</label>
+    <select id="action">
+      <option value="extract">Extract Text</option>
+      <option value="translate">Translate to Bangla</option>
+    </select>
 
-        <label>
-            Upload your Image or PDF
-        </label>
+    <br />
 
+    <input type="file" id="fileInput" accept=".png,.jpg,.jpeg,.pdf" />
 
-        <label>
-            Choose Action:
-        </label>
+    <br />
 
+    <button id="runBtn">Run</button>
 
-        <select id="action">
+    <h2>Result:</h2>
+    <pre id="result">Nothing yet...</pre>
+  </div>
 
-            <option value="extract">
-                Extract Text
-            </option>
+  <script>
+    document.getElementById("runBtn").addEventListener("click", async () => {
+      const fileInput = document.getElementById("fileInput");
+      const action = document.getElementById("action").value;
+      const resultBox = document.getElementById("result");
 
-            <option value="translate">
-                Translate to Bangla
-            </option>
+      if (!fileInput.files.length) {
+        resultBox.textContent = "Please choose a file.";
+        return;
+      }
 
-        </select>
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+      formData.append("action", action);
 
+      resultBox.textContent = "Processing...";
 
-        <br>
+      try {
+        // Render compatible API call
+        const response = await fetch("/upload", {
+          method: "POST",
+          body: formData
+        });
 
+        const data = await response.json();
 
-        <input
-            type="file"
-            id="fileInput"
-            accept="image/*,.pdf"
-        >
-
-
-        <br>
-
-
-        <button onclick="runProcess()">
-            Run
-        </button>
-
-
-        <h2>
-            Result:
-        </h2>
-
-
-        <div id="result">
-            Nothing yet...
-        </div>
-
-    </div>
-
-
-    <script>
-
-        async function runProcess() {
-
-            const fileInput =
-                document.getElementById("fileInput");
-
-            const action =
-                document.getElementById("action").value;
-
-            const result =
-                document.getElementById("result");
-
-
-            if (!fileInput.files.length) {
-
-                result.textContent =
-                    "Please choose a file first.";
-
-                return;
-            }
-
-
-            const formData =
-                new FormData();
-
-
-            formData.append(
-                "file",
-                fileInput.files[0]
-            );
-
-
-            formData.append(
-                "action",
-                action
-            );
-
-
-            result.textContent =
-                "Processing...";
-
-
-            try {
-
-                const response =
-                    await fetch(
-                        "http://127.0.0.1:8000/upload",
-                        {
-                            method: "POST",
-                            body: formData
-                        }
-                    );
-
-
-                const data =
-                    await response.json();
-
-
-                result.textContent =
-                    JSON.stringify(
-                        data,
-                        null,
-                        2
-                    );
-
-
-            } catch (error) {
-
-                result.textContent =
-                    "Error: " + error;
-
-            }
-
+        if (action === "translate" && data.translated_text) {
+          resultBox.textContent =
+            "=== Extracted Text ===\n\n" +
+            data.extracted_text +
+            "\n\n=== Bangla Translation ===\n\n" +
+            data.translated_text;
+        } else {
+          resultBox.textContent = JSON.stringify(data, null, 2);
         }
 
-    </script>
-
+      } catch (error) {
+        resultBox.textContent = "Error: " + error;
+      }
+    });
+  </script>
 </body>
-
 </html>
